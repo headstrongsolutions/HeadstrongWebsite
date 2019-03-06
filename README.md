@@ -1,4 +1,4 @@
-# Headstrong Solutions Website
+# <img src="wwwroot/images/cube_logo.svg" style="width:40px;margin-top:15px;"/> Headstrong Solutions Website
 
 Asp Net Core MVC website with Markdown middleware 
 
