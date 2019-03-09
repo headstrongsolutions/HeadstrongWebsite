@@ -28,7 +28,7 @@ namespace Headstrong
 
             services.AddMarkdown(config =>
             {
-                config.HtmlTagBlackList = "script|iframe|object|embed|form"; // default
+                config.HtmlTagBlackList = "iframe|object|embed|form"; // default
                 var folderConfig = config.AddMarkdownProcessingFolder(string.Format("{0}/",Configuration["MarkdownDirectory"]), "~/Views/Shared/MarkdownPageTemplate.cshtml");
                 folderConfig.SanitizeHtml = true;  //  default
                 folderConfig.ProcessExtensionlessUrls = true;  // default
