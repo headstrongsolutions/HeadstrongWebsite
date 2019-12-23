@@ -17,6 +17,8 @@ namespace Headstrong.Controllers
 
         private AppSettingsModel AppSettings;
 
+        private const string Section = "Pages";
+
         public PagesController(IHostingEnvironment hostingEnvironment, IOptionsMonitor<AppSettingsModel> appSettings)
         {
             this.HostingEnvironment = hostingEnvironment;
@@ -42,8 +44,9 @@ namespace Headstrong.Controllers
                 }
             );
             fileCounter++;
+
             foreach (string filename in Directory.EnumerateFiles(
-                string.Format("{0}/{1}", "wwwroot", AppSettings.MarkdownDirectory),
+                string.Format("{0}/{1}/{2}", "wwwroot", AppSettings.MarkdownDirectory, Section),
                 "*.md",
                 SearchOption.AllDirectories
                 )
