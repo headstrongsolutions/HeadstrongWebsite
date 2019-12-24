@@ -1,7 +1,16 @@
-﻿@{
+﻿@model Headstrong.Models.MarkdownHierachyViewModel
+
+@{
     ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Projects</h1>
+<h1>Indexes of Projects</h1>
 
-<p>dave</p>
+@foreach(var markdownPage in Model.MarkdownPages)
+{
+    if(markdownPage.Name.Contains(".md"))
+    {
+        <div><a href="@markdownPage.Name.Replace(".md","")">@markdownPage.Name.Replace(".md","")</a></div>
+    }
+}
