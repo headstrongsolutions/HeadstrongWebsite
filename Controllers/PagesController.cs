@@ -13,13 +13,13 @@ namespace Headstrong.Controllers
 {
     public class PagesController : Controller
     {
-        private readonly IHostingEnvironment HostingEnvironment;
+        private readonly IWebHostEnvironment HostingEnvironment;
 
         private AppSettingsModel AppSettings;
 
         private const string Section = "Pages";
 
-        public PagesController(IHostingEnvironment hostingEnvironment, IOptionsMonitor<AppSettingsModel> appSettings)
+        public PagesController(IWebHostEnvironment hostingEnvironment, IOptionsMonitor<AppSettingsModel> appSettings)
         {
             this.HostingEnvironment = hostingEnvironment;
             this.AppSettings = appSettings.CurrentValue;
@@ -99,10 +99,10 @@ namespace Headstrong.Controllers
         /// <param name="path"></param>
         static string NormalizePath(string path)
         {
-            //return Path.GetFullPath(path); // this always turns into a full OS path
-
             if (string.IsNullOrEmpty(path))
+            {
                 return path;
+            }
 
             char slash = Path.DirectorySeparatorChar;
             path = path.Replace('/', slash).Replace('\\', slash);

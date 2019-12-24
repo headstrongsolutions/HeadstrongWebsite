@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Headstrong.Models;
 
 using System.Net.Http;
-using Newtonsoft.Json;
 
 namespace Headstrong.Controllers
 {
