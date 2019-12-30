@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<MarkdownConfigurationModel> MarkdownConfiguration
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -34,9 +36,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Pages" asp-action="Index">Pages</a>
-                        </li>
+                        @if (MarkdownConfiguration.CurrentValue.MarkdownDirectories != null && MarkdownConfiguration.CurrentValue.MarkdownDirectories.Count() > 0)
+                            {
+                                foreach (var pageName in MarkdownConfiguration.CurrentValue.MarkdownDirectories)
+                                {
+                                    <li class="nav-item">
+                                        <a href="/@pageName/Index">@pageName</a>
+                                    </li>
+                                }
+                            }
                     </ul>
                 </div>
             </div>

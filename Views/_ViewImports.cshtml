@@ -1,9 +1,10 @@
 ﻿@using Headstrong
 @using Headstrong.Models
+@using Microsoft.Extensions.Options
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Westwind.AspNetCore
 @addTagHelper *, Westwind.AspNetCore.Markdown
-@inject Microsoft.Extensions.Options.IOptions<AppSettingsModel> metaOptions
+@inject Microsoft.Extensions.Options.IOptions<MarkdownConfigurationModel> metaOptions
 @{
     var options = metaOptions.Value;
 }
