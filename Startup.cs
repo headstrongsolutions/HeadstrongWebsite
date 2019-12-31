@@ -41,8 +41,8 @@ namespace Headstrong
                 config.HtmlTagBlackList = "iframe|object|embed|form";
                 if(markdownConfiguration.MarkdownDirectories != null && markdownConfiguration.MarkdownDirectories.Count > 0)
                 {
-                    var folderConfig = config.AddMarkdownProcessingFolder(markdownConfiguration.MarkdownDirectories.FirstOrDefault(), "~/Pages/__MarkdownPageTemplate.cshtml");
-                    foreach (string folderName in markdownConfiguration.MarkdownDirectories.Where(x => x != markdownConfiguration.MarkdownDirectories.FirstOrDefault()))
+                    var folderConfig = new MarkdownProcessingFolder();
+                    foreach (string folderName in markdownConfiguration.MarkdownDirectories)
                     {
                         config.AddMarkdownProcessingFolder(
                             string.Format("{0}/", folderName),
