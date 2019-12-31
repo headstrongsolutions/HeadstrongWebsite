@@ -1,12 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Markdig;
+using Markdig.Extensions.AutoIdentifiers;
+using Markdig.Extensions.Tables;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Westwind.AspNetCore.Markdown;
-using Markdig;
-using Markdig.Extensions.AutoIdentifiers;
 using Headstrong.Models;
+
 using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Headstrong
@@ -23,15 +31,27 @@ namespace Headstrong
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions();
-            services.Configure<AppSettingsModel>(Configuration);
+            services.Configure<MarkdownConfigurationModel>(Configuration.GetSection("Markdown"));
+
+            var markdownConfiguration = new MarkdownConfigurationModel();
+            Configuration.GetSection("Markdown").Bind(markdownConfiguration);
 
             services.AddMarkdown(config =>
             {
-                config.HtmlTagBlackList = "iframe|object|embed|form"; // default
-                var folderConfig = config.AddMarkdownProcessingFolder(string.Format("{0}/",Configuration["MarkdownDirectory"]), "~/Views/Shared/MarkdownPageTemplate.cshtml");
-                folderConfig.SanitizeHtml = true;  //  default
-                folderConfig.ProcessExtensionlessUrls = true;  // default
+                config.HtmlTagBlackList = "iframe|object|embed|form";
+                if(markdownConfiguration.MarkdownDirectories != null && markdownConfiguration.MarkdownDirectories.Count > 0)
+                {
+                    var folderConfig = config.AddMarkdownProcessingFolder(markdownConfiguration.MarkdownDirectories.FirstOrDefault(), "~/Pages/__MarkdownPageTemplate.cshtml");
+                    foreach (string folderName in markdownConfiguration.MarkdownDirectories.Where(x => x != markdownConfiguration.MarkdownDirectories.FirstOrDefault()))
+                    {
+                        config.AddMarkdownProcessingFolder(
+                            string.Format("{0}/", folderName),
+                            "~/Views/Shared/MarkdownPageTemplate.cshtml");
+                    }
+                    folderConfig.SanitizeHtml = true;
+                    folderConfig.ProcessExtensionlessUrls = true;
+                }
+                
                 config.ConfigureMarkdigPipeline = builder =>
                 {
                     builder.UseEmphasisExtras(Markdig.Extensions.EmphasisExtras.EmphasisExtraOptions.Default)
@@ -50,22 +70,26 @@ namespace Headstrong
                 };
             });
 
-            services.AddMvc(option => option.EnableEndpointRouting = false);
+            services.AddMvc()
+                    .AddApplicationPart(typeof(MarkdownPageProcessorMiddleware).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("/Home/Error");
-            //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            //    app.UseHsts();
-            //}
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");            
+            }
+
+            app.UseDefaultFiles(new DefaultFilesOptions()
+            {
+                DefaultFileNames = new List<string> { "index.md", "index.html" }
+            });
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
@@ -85,7 +109,7 @@ namespace Headstrong
             });
 
             //app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            
 
             //app.UseRouting(routes =>
             //{
@@ -99,7 +123,17 @@ namespace Headstrong
             //app.UseAuthorization();
 
             app.UseMarkdown();
-            app.UseMvcWithDefaultRoute();
+
+            app.UseRouting();
+
+            app.UseStaticFiles();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapDefaultControllerRoute();
+
+            });
         }
     }
 }
