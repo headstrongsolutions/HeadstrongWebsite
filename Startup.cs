@@ -32,6 +32,7 @@ namespace Headstrong
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MarkdownConfigurationModel>(Configuration.GetSection("Markdown"));
+            services.Configure<JarvisConfigurationModel>(Configuration.GetSection("Jarvis"));
 
             var markdownConfiguration = new MarkdownConfigurationModel();
             Configuration.GetSection("Markdown").Bind(markdownConfiguration);
